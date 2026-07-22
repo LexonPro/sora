@@ -221,35 +221,75 @@ export default function HomePage() {
           {/* Navigation Bar */}
           <Navbar onSelectCategory={handleSelectCategory} />
 
-          {/* 1. HERO SECTION */}
-          <section className="w-full min-h-screen flex flex-col md:flex-row relative z-10 pt-20">
-            {/* Left copy column */}
-            <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 relative z-10">
-              {/* Micro telemetry label */}
-              <div className="font-mono text-[9px] tracking-[0.4em] text-accent-blue mb-4 uppercase">
-                SORA WORLD // SYSTEM PROTOCOL v4.1
+          {/* 1. HERO SECTION — Active Theory Immersive Style */}
+          <section className="w-full h-screen relative z-10 overflow-hidden flex items-center justify-center"
+            onMouseMove={(e) => {
+              const x = (e.clientX / window.innerWidth - 0.5) * 2;
+              const y = (e.clientY / window.innerHeight - 0.5) * 2;
+              document.documentElement.style.setProperty('--mx', `${x}`);
+              document.documentElement.style.setProperty('--my', `${y}`);
+            }}
+          >
+            {/* Full-viewport 3D canvas as atmospheric backdrop */}
+            <div className="absolute inset-0 z-0 opacity-50">
+              <ThreeCanvas />
+            </div>
+
+            {/* Noise grain texture overlay */}
+            <div className="absolute inset-0 z-[2] pointer-events-none opacity-[0.04]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'repeat',
+              }}
+            />
+
+            {/* Vignette overlay */}
+            <div className="absolute inset-0 z-[3] pointer-events-none"
+              style={{
+                background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
+              }}
+            />
+
+            {/* Main content — centered, layered with parallax */}
+            <div className="relative z-10 text-center px-6 max-w-5xl mx-auto select-none">
+              
+              {/* Micro system label — top float */}
+              <div 
+                className="font-mono text-[9px] tracking-[0.5em] text-silver/40 uppercase mb-8 transition-transform duration-700 ease-out"
+                style={{ transform: `translate(calc(var(--mx, 0) * -8px), calc(var(--my, 0) * -5px))` }}
+              >
+                SORA WORLD // SYSTEM ONLINE
               </div>
 
-              {/* Taglines */}
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-none text-white font-sans uppercase">
-                SORA WORLD
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-purple to-white glow-text">
-                  WEAR YOUR UNIVERSE
+              {/* Primary headline — massive, parallax reactive */}
+              <h1 
+                className="text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] font-extrabold tracking-tighter leading-[0.85] text-white font-sans uppercase transition-transform duration-500 ease-out"
+                style={{ transform: `translate(calc(var(--mx, 0) * 12px), calc(var(--my, 0) * 8px))` }}
+              >
+                <span className="block">SORA</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-silver to-white/60" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}>
+                  WORLD
                 </span>
               </h1>
-              
-              <div className="mt-6 space-y-2">
-                <div className="font-mono text-sm text-accent-purple font-bold tracking-[0.25em] uppercase">
-                  Anime. Street. Identity.
+
+              {/* Sub-headline — slower parallax layer */}
+              <div 
+                className="mt-8 transition-transform duration-1000 ease-out"
+                style={{ transform: `translate(calc(var(--mx, 0) * -6px), calc(var(--my, 0) * -4px))` }}
+              >
+                <div className="font-mono text-xs sm:text-sm text-accent-purple/80 font-semibold tracking-[0.35em] uppercase">
+                  Wear Your Universe
                 </div>
-                <p className="font-sans text-xs text-silver/70 leading-relaxed tracking-wider">
-                  Premium Anime & Streetwear For The Next Generation.
+                <p className="font-mono text-[10px] text-silver/40 mt-3 tracking-[0.2em] max-w-md mx-auto">
+                  Anime · Street · Identity — Premium streetwear for the next generation
                 </p>
               </div>
 
-              {/* CTA button with micro-animation */}
-              <div className="flex gap-4 mt-10">
+              {/* Minimal floating CTAs */}
+              <div 
+                className="flex justify-center gap-6 mt-14 transition-transform duration-700 ease-out"
+                style={{ transform: `translate(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px))` }}
+              >
                 <button
                   onClick={() => {
                     synthAudio.playClick();
@@ -257,44 +297,43 @@ export default function HomePage() {
                       productsSectionRef.current.scrollIntoView({ behavior: "smooth" });
                     }
                   }}
-                  className="px-8 py-3 bg-white text-black font-semibold font-mono text-xs rounded hover:bg-accent-blue hover:text-white transition-all cursor-pointer shadow-lg hover:shadow-accent-blue/20"
+                  className="group relative px-10 py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-mono text-[10px] tracking-[0.3em] rounded-full hover:bg-white hover:text-black transition-all duration-500 cursor-pointer overflow-hidden"
+                  onMouseEnter={() => synthAudio.playHover()}
                 >
-                  🔥 Shop Collection
+                  <span className="relative z-10">SHOP COLLECTION</span>
+                  <div className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                 </button>
                 <button
                   onClick={() => {
                     synthAudio.playClick();
-                    window.scrollTo({
-                      top: window.innerHeight * 1.8,
-                      behavior: "smooth"
-                    });
+                    window.scrollTo({ top: window.innerHeight * 1.2, behavior: "smooth" });
                   }}
-                  className="px-8 py-3 border border-white/15 text-white font-mono text-xs rounded hover:bg-white/5 transition-colors cursor-pointer"
+                  className="px-10 py-4 text-silver/50 font-mono text-[10px] tracking-[0.3em] hover:text-white transition-colors duration-500 cursor-pointer"
+                  onMouseEnter={() => synthAudio.playHover()}
                 >
-                  ✨ Explore SORA
+                  EXPLORE
                 </button>
-              </div>
-
-              {/* Extra specifications tags */}
-              <div className="mt-16 grid grid-cols-3 gap-4 border-t border-white/5 pt-8 font-mono text-[10px] text-silver/60">
-                <div>
-                  <span className="text-white block font-bold">450 GSM</span>
-                  FRENCH COTTON
-                </div>
-                <div>
-                  <span className="text-white block font-bold">316L STEEL</span>
-                  UTILITY GEAR
-                </div>
-                <div>
-                  <span className="text-white block font-bold">RAZORPAY</span>
-                  3D SECURED PAY
-                </div>
               </div>
             </div>
 
-            {/* Right WebGL canvas column */}
-            <div className="w-full md:w-1/2 h-[50vh] md:h-auto min-h-[400px] relative">
-              <ThreeCanvas />
+            {/* Bottom floating specs bar */}
+            <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
+              <div 
+                className="flex gap-12 font-mono text-[8px] text-silver/25 tracking-[0.2em] uppercase transition-transform duration-1000 ease-out"
+                style={{ transform: `translate(calc(var(--mx, 0) * -3px), 0)` }}
+              >
+                <span>450 GSM FRENCH TERRY</span>
+                <span className="text-white/10">·</span>
+                <span>316L SURGICAL STEEL</span>
+                <span className="text-white/10">·</span>
+                <span>RAZORPAY 3D SECURE</span>
+              </div>
+            </div>
+
+            {/* Scroll indicator */}
+            <div className="absolute bottom-8 right-8 z-10 flex flex-col items-center gap-2">
+              <div className="w-[1px] h-8 bg-gradient-to-b from-transparent to-white/20" />
+              <span className="font-mono text-[7px] text-silver/30 tracking-[0.3em] [writing-mode:vertical-lr]">SCROLL</span>
             </div>
           </section>
 
