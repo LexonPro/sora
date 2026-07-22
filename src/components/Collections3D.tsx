@@ -18,15 +18,15 @@ interface CollectionItem {
 const collections: CollectionItem[] = [
   {
     id: "anime",
-    name: "ANIME COLLECTION",
+    name: "🌌 ANIME COLLECTION",
     tagline: "WEAR THE LEGEND",
     imageBg: "linear-gradient(135deg, rgba(255, 0, 127, 0.2) 0%, rgba(13, 13, 13, 0.9) 100%)",
     category: "Anime Collection",
     link: "/?filter=Anime Collection",
   },
   {
-    id: "korean",
-    name: "SEOUL TECHWEAR",
+    id: "streetwear",
+    name: "⚡ STREETWEAR",
     tagline: "URBAN UTILITY SPEC",
     imageBg: "linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(13, 13, 13, 0.9) 100%)",
     category: "Korean Street",
@@ -34,15 +34,15 @@ const collections: CollectionItem[] = [
   },
   {
     id: "oversized",
-    name: "OVERSIZED BLANKS",
+    name: "🌙 OVERSIZED SERIES",
     tagline: "ESSENTIAL HEAVYWEIGHTS",
     imageBg: "linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(13, 13, 13, 0.9) 100%)",
     category: "Oversized",
     link: "/?filter=Oversized",
   },
   {
-    id: "accessories",
-    name: "CYBER GEAR",
+    id: "korean",
+    name: "🚀 KOREAN FASHION",
     tagline: "MODULAR ACCENTUATIONS",
     imageBg: "linear-gradient(135deg, rgba(0, 210, 255, 0.2) 0%, rgba(13, 13, 13, 0.9) 100%)",
     category: "Accessories",

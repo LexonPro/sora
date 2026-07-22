@@ -46,35 +46,38 @@ export const NewDropCountdown: React.FC = () => {
         <div className="text-center md:text-left">
           <span className="font-mono text-[9px] text-accent-purple tracking-[0.3em] font-semibold flex items-center justify-center md:justify-start gap-2 mb-2">
             <Zap className="w-3.5 h-3.5 text-accent-purple animate-pulse" />
-            TELEMETRY SYSTEM // ACTIVE TELECAST
+            LIMITED DROP SYSTEM // DROP 001
           </span>
-          <h3 className="text-2xl md:text-3xl font-extrabold tracking-wide text-white font-sans">
-            NEXT DROP COUNTDOWN
+          <h3 className="text-2xl md:text-3xl font-extrabold tracking-wide text-white font-sans uppercase">
+            SHADOW REALM SHOWCASE
           </h3>
           <p className="font-mono text-xs text-silver mt-2">
-            Limited cyber streetwear editions drop in limited slots.
+            Only <span className="text-accent-blue font-bold">50 Pieces Available</span>. Designed for the Next Generation.
           </p>
         </div>
 
         {/* Countdown digits */}
-        <div className="flex gap-4 font-mono text-center select-none">
-          {[
-            { label: "HRS", val: timeLeft.hours },
-            { label: "MIN", val: timeLeft.minutes },
-            { label: "SEC", val: timeLeft.seconds },
-          ].map((item, idx) => (
-            <div key={idx} className="flex gap-4 items-center">
-              <div className="flex flex-col">
-                <div className="bg-white/3 border border-white/10 rounded-xl w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-xl glow-blue">
-                  {item.val.toString().padStart(2, "0")}
+        <div className="flex flex-col items-center gap-3">
+          <span className="font-mono text-[9px] text-silver/60 tracking-[0.2em] uppercase">DROP ENDS IN:</span>
+          <div className="flex gap-4 font-mono text-center select-none">
+            {[
+              { label: "HRS", val: timeLeft.hours },
+              { label: "MIN", val: timeLeft.minutes },
+              { label: "SEC", val: timeLeft.seconds },
+            ].map((item, idx) => (
+              <div key={idx} className="flex gap-4 items-center">
+                <div className="flex flex-col">
+                  <div className="bg-white/3 border border-white/10 rounded-xl w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-xl glow-blue">
+                    {item.val.toString().padStart(2, "0")}
+                  </div>
+                  <span className="text-[9px] text-silver/60 tracking-widest mt-2">{item.label}</span>
                 </div>
-                <span className="text-[9px] text-silver/60 tracking-widest mt-2">{item.label}</span>
+                {idx < 2 && (
+                  <span className="text-2xl font-bold text-accent-purple animate-pulse mb-6">:</span>
+                )}
               </div>
-              {idx < 2 && (
-                <span className="text-2xl font-bold text-accent-purple animate-pulse mb-6">:</span>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

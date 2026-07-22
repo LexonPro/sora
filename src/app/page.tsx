@@ -232,16 +232,21 @@ export default function HomePage() {
 
               {/* Taglines */}
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-none text-white font-sans uppercase">
-                Wear Your
+                SORA WORLD
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-purple to-white glow-text">
-                  Universe
+                  WEAR YOUR UNIVERSE
                 </span>
               </h1>
               
-              <p className="font-mono text-xs sm:text-sm text-silver mt-6 max-w-md leading-relaxed tracking-wider">
-                Luxury blank canvases merged with high-concept technical aesthetics. Designed beyond physical boundaries.
-              </p>
+              <div className="mt-6 space-y-2">
+                <div className="font-mono text-sm text-accent-purple font-bold tracking-[0.25em] uppercase">
+                  Anime. Street. Identity.
+                </div>
+                <p className="font-sans text-xs text-silver/70 leading-relaxed tracking-wider">
+                  Premium Anime & Streetwear For The Next Generation.
+                </p>
+              </div>
 
               {/* CTA button with micro-animation */}
               <div className="flex gap-4 mt-10">
@@ -254,7 +259,7 @@ export default function HomePage() {
                   }}
                   className="px-8 py-3 bg-white text-black font-semibold font-mono text-xs rounded hover:bg-accent-blue hover:text-white transition-all cursor-pointer shadow-lg hover:shadow-accent-blue/20"
                 >
-                  SHOP NEW DROP
+                  🔥 Shop Collection
                 </button>
                 <button
                   onClick={() => {
@@ -266,7 +271,7 @@ export default function HomePage() {
                   }}
                   className="px-8 py-3 border border-white/15 text-white font-mono text-xs rounded hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                  EXPLORE BLUEPRINT
+                  ✨ Explore SORA
                 </button>
               </div>
 
