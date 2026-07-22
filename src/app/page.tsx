@@ -1,576 +1,84 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useStore, Product } from "@/context/StoreContext";
-import { synthAudio } from "@/components/AudioEngine";
-import { LogoLoader } from "@/components/LogoLoader";
-import { CustomCursor, BackgroundParticles } from "@/components/Effects";
-import { GlitchOverlay } from "@/components/GlitchOverlay";
-import { Navbar } from "@/components/Navbar";
-import ThreeCanvas from "@/components/ThreeCanvas";
-import { Collections3D } from "@/components/Collections3D";
-import { NewDropCountdown, LimitedEditionBanner } from "@/components/PromotionalBanners";
-import { Heart, ShoppingBag, Eye, Send, Award, HeartHandshake, EyeOff } from "lucide-react";
-import Link from "next/link";
+import React, { useState, Suspense, lazy } from "react";
+import SmoothScroll from "@/components/SmoothScroll";
+import Preloader from "@/components/Preloader";
+import Cursor from "@/components/Cursor";
+import Navigation from "@/components/Navigation";
+import ManifestoSection from "@/components/ManifestoSection";
+import CommunityMosaic from "@/components/CommunityMosaic";
+import ProductShowcase from "@/components/ProductShowcase";
+import CollectionReel from "@/components/CollectionReel";
 
-const InstagramIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-  </svg>
-);
+// Lazy load heavy WebGL scenes
+const HeroScene = lazy(() => import("@/components/HeroScene"));
+const FooterScene = lazy(() => import("@/components/FooterScene"));
 
-// Custom Product Card
-const ProductCard: React.FC<{
-  product: Product;
-  onAddToCart: (p: Product, s: string) => void;
-  onToggleWishlist: (id: string) => void;
-  isWishlisted: boolean;
-}> = ({ product, onAddToCart, onToggleWishlist, isWishlisted }) => {
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "M");
-  const [hovered, setHovered] = useState(false);
-
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onAddToCart(product, selectedSize);
-  };
-
-  const handleWishlist = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleWishlist(product.id);
-  };
-
-  return (
-    <div
-      className="glass border border-white/5 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all duration-300 hover:border-accent-blue/30 hover:-translate-y-1 bg-black/30 hover:shadow-2xl hover:shadow-accent-blue/5"
-      onMouseEnter={() => {
-        setHovered(true);
-        synthAudio.playHover();
-      }}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div className="relative aspect-[4/5] w-full bg-white/2 flex items-center justify-center p-6 overflow-hidden">
-        {/* Holographic glowing radial gradient matched to product color */}
-        <div
-          className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle, ${product.color} 0%, transparent 70%)`,
-          }}
-        />
-
-        {/* Procedural Vector Clothing representation (Streetwear blueprint look) */}
-        <svg
-          viewBox="0 0 100 100"
-          className="w-32 h-32 text-white/40 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-        >
-          {/* Outer glow aura */}
-          <circle cx="50" cy="50" r="35" fill="none" stroke={`${product.color}20`} strokeWidth="1" strokeDasharray="3 3" />
-          
-          {product.category.includes("Cargo") ? (
-            // Cargo Pants SVG
-            <path
-              d="M38 25 L62 25 L68 75 L56 75 L50 40 L44 75 L32 75 Z"
-              fill="none"
-              stroke={product.color}
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          ) : product.category.includes("Chain") || product.id.includes("beanie") ? (
-            // Accessory Loop
-            <path
-              d="M50 20 C65 20, 68 55, 50 75 C32 55, 35 20, 50 20 Z"
-              fill="none"
-              stroke={product.color}
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          ) : (
-            // Hoodie / Tee SVG
-            <path
-              d="M30 30 L40 25 L50 28 L60 25 L70 30 L66 65 L60 65 L50 68 L40 65 L34 65 Z M30 30 L22 45 L30 48 L34 38 M70 30 L78 45 L70 48 L66 38"
-              fill="none"
-              stroke={product.color}
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          )}
-          {/* Inside details */}
-          <circle cx="50" cy="40" r="3" fill="none" stroke="white" strokeWidth="1" />
-          <path d="M45 48 H55" stroke="white" strokeWidth="1" />
-        </svg>
-
-        {/* Badges / limited edition indicator */}
-        <div className="absolute top-4 left-4 flex flex-col gap-1.5 font-mono text-[8px] tracking-wider">
-          <span className="bg-accent-blue/20 text-accent-blue px-2.5 py-1 rounded border border-accent-blue/10">
-            {product.tag.toUpperCase()}
-          </span>
-          {product.stock <= 5 && (
-            <span className="bg-red-500/20 text-red-500 px-2 py-0.5 rounded border border-red-500/10 animate-pulse">
-              ONLY {product.stock} LEFT
-            </span>
-          )}
-        </div>
-
-        {/* Wishlist Heart */}
-        <button
-          onClick={handleWishlist}
-          className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-black/80 rounded-full border border-white/10 text-silver hover:text-white transition-all cursor-pointer z-10"
-        >
-          <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "text-accent-purple fill-accent-purple" : ""}`} />
-        </button>
-
-        {/* Hover quick settings overlays */}
-        <div className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-12 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-          <div className="flex bg-black/60 rounded border border-white/10 flex-grow font-mono text-[9px] text-white">
-            {product.sizes.map((sz) => (
-              <button
-                key={sz}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  synthAudio.playClick();
-                  setSelectedSize(sz);
-                }}
-                className={`flex-grow py-1.5 transition-colors cursor-pointer ${
-                  selectedSize === sz ? "bg-white text-black font-semibold" : "hover:bg-white/10"
-                }`}
-              >
-                {sz}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={handleQuickAdd}
-            className="p-2 bg-white text-black hover:bg-accent-blue hover:text-white rounded-lg border border-white/10 transition-colors cursor-pointer"
-            title="Quick Add"
-          >
-            <ShoppingBag className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Info labels */}
-      <div className="p-5 space-y-2 border-t border-white/5">
-        <div className="flex justify-between items-start">
-          <Link
-            href={`/product/${product.id}`}
-            onClick={() => synthAudio.playClick()}
-            className="font-sans font-semibold text-sm tracking-wide text-white hover:text-accent-blue transition-colors cursor-pointer truncate max-w-[200px]"
-          >
-            {product.name}
-          </Link>
-          <span className="font-mono text-xs text-white">${product.price}</span>
-        </div>
-        <div className="flex justify-between items-center text-[10px] font-mono text-silver/60">
-          <span className="uppercase">{product.category}</span>
-          <span className="text-accent-purple">{product.rating} ★</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function HomePage() {
-  const [loading, setLoading] = useState(true);
-  const { products, cart, wishlist, toggleWishlist, addToCart } = useStore();
-  const [filterCategory, setFilterCategory] = useState("");
-  const productsSectionRef = useRef<HTMLDivElement | null>(null);
-
-  // Filter products based on active menu selection
-  const filteredProducts = filterCategory
-    ? products.filter((p) => p.category === filterCategory)
-    : products;
-
-  const handleSelectCategory = (cat: string) => {
-    // Scroll down to products grid
-    if (productsSectionRef.current) {
-      productsSectionRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-    
-    if (cat === "NEW DROPS" || cat === "") {
-      setFilterCategory("");
-    } else {
-      setFilterCategory(cat);
-    }
-  };
-
-  const handleAddToCart = (product: Product, size: string) => {
-    synthAudio.playChime();
-    addToCart(product, size, 1);
-  };
+export default function Home() {
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <>
-      <LogoLoader onComplete={() => setLoading(false)} />
-      
-      {!loading && (
-        <div className="min-h-screen relative bg-[#0D0D0D]">
-          {/* Premium effects */}
-          <CustomCursor />
-          <BackgroundParticles />
-          <GlitchOverlay trigger={filterCategory} />
+      {/* Cinematic Preloader */}
+      {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
 
-          {/* Navigation Bar */}
-          <Navbar onSelectCategory={handleSelectCategory} />
+      {/* Custom Cursor (desktop only) */}
+      <Cursor />
 
-          {/* 1. HERO SECTION — Active Theory Immersive Style */}
-          <section className="w-full h-screen relative z-10 overflow-hidden flex items-center justify-center"
-            onMouseMove={(e) => {
-              const x = (e.clientX / window.innerWidth - 0.5) * 2;
-              const y = (e.clientY / window.innerHeight - 0.5) * 2;
-              document.documentElement.style.setProperty('--mx', `${x}`);
-              document.documentElement.style.setProperty('--my', `${y}`);
-            }}
-          >
-            {/* Full-viewport 3D canvas as atmospheric backdrop */}
-            <div className="absolute inset-0 z-0 opacity-50">
-              <ThreeCanvas />
-            </div>
+      {/* Smooth scroll wrapper */}
+      <SmoothScroll>
+        {/* Film grain overlay */}
+        <div className="grain-overlay" />
 
-            {/* Noise grain texture overlay */}
-            <div className="absolute inset-0 z-[2] pointer-events-none opacity-[0.04]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'repeat',
-              }}
-            />
+        {/* Navigation — appears after scrolling past hero */}
+        <Navigation />
 
-            {/* Vignette overlay */}
-            <div className="absolute inset-0 z-[3] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
-              }}
-            />
+        {/* ─── HERO ─── */}
+        <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+          {/* WebGL Particle Wordmark */}
+          <Suspense fallback={null}>
+            <HeroScene />
+          </Suspense>
 
-            {/* Main content — centered, layered with parallax */}
-            <div className="relative z-10 text-center px-6 max-w-5xl mx-auto select-none">
-              
-              {/* Micro system label — top float */}
-              <div 
-                className="font-mono text-[9px] tracking-[0.5em] text-silver/40 uppercase mb-8 transition-transform duration-700 ease-out"
-                style={{ transform: `translate(calc(var(--mx, 0) * -8px), calc(var(--my, 0) * -5px))` }}
-              >
-                SORA WORLD // SYSTEM ONLINE
-              </div>
-
-              {/* Primary headline — massive, parallax reactive */}
-              <h1 
-                className="text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] font-extrabold tracking-tighter leading-[0.85] text-white font-sans uppercase transition-transform duration-500 ease-out"
-                style={{ transform: `translate(calc(var(--mx, 0) * 12px), calc(var(--my, 0) * 8px))` }}
-              >
-                <span className="block">SORA</span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-silver to-white/60" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}>
-                  WORLD
-                </span>
-              </h1>
-
-              {/* Sub-headline — slower parallax layer */}
-              <div 
-                className="mt-8 transition-transform duration-1000 ease-out"
-                style={{ transform: `translate(calc(var(--mx, 0) * -6px), calc(var(--my, 0) * -4px))` }}
-              >
-                <div className="font-mono text-xs sm:text-sm text-accent-purple/80 font-semibold tracking-[0.35em] uppercase">
-                  Wear Your Universe
-                </div>
-                <p className="font-mono text-[10px] text-silver/40 mt-3 tracking-[0.2em] max-w-md mx-auto">
-                  Anime · Street · Identity — Premium streetwear for the next generation
-                </p>
-              </div>
-
-              {/* Minimal floating CTAs */}
-              <div 
-                className="flex justify-center gap-6 mt-14 transition-transform duration-700 ease-out"
-                style={{ transform: `translate(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px))` }}
-              >
-                <button
-                  onClick={() => {
-                    synthAudio.playClick();
-                    if (productsSectionRef.current) {
-                      productsSectionRef.current.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                  className="group relative px-10 py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-mono text-[10px] tracking-[0.3em] rounded-full hover:bg-white hover:text-black transition-all duration-500 cursor-pointer overflow-hidden"
-                  onMouseEnter={() => synthAudio.playHover()}
-                >
-                  <span className="relative z-10">SHOP COLLECTION</span>
-                  <div className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                </button>
-                <button
-                  onClick={() => {
-                    synthAudio.playClick();
-                    window.scrollTo({ top: window.innerHeight * 1.2, behavior: "smooth" });
-                  }}
-                  className="px-10 py-4 text-silver/50 font-mono text-[10px] tracking-[0.3em] hover:text-white transition-colors duration-500 cursor-pointer"
-                  onMouseEnter={() => synthAudio.playHover()}
-                >
-                  EXPLORE
-                </button>
-              </div>
-            </div>
-
-            {/* Bottom floating specs bar */}
-            <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
-              <div 
-                className="flex gap-12 font-mono text-[8px] text-silver/25 tracking-[0.2em] uppercase transition-transform duration-1000 ease-out"
-                style={{ transform: `translate(calc(var(--mx, 0) * -3px), 0)` }}
-              >
-                <span>450 GSM FRENCH TERRY</span>
-                <span className="text-white/10">·</span>
-                <span>316L SURGICAL STEEL</span>
-                <span className="text-white/10">·</span>
-                <span>RAZORPAY 3D SECURE</span>
-              </div>
-            </div>
-
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 right-8 z-10 flex flex-col items-center gap-2">
-              <div className="w-[1px] h-8 bg-gradient-to-b from-transparent to-white/20" />
-              <span className="font-mono text-[7px] text-silver/30 tracking-[0.3em] [writing-mode:vertical-lr]">SCROLL</span>
-            </div>
-          </section>
-
-          {/* Limited stock levels warnings */}
-          <LimitedEditionBanner />
-
-          {/* 2. CURVED 3D CAROUSEL SECTION */}
-          <section className="py-20 px-6 relative z-10">
-            <Collections3D onSelectCategory={(cat) => {
-              // Direct selection logic from carousel changes the main category filter grid below
-              if (cat) setFilterCategory(cat);
-            }} />
-          </section>
-
-          {/* 3. PRODUCT CATALOG GRID SECTION */}
-          <section ref={productsSectionRef} className="py-20 px-6 max-w-7xl mx-auto relative z-10 scroll-mt-20">
-            {/* Section Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-white/5 pb-6">
-              <div>
-                <span className="font-mono text-[9px] text-accent-blue tracking-[0.3em] font-semibold block mb-2 uppercase">
-                  ACTIVE REGISTRY // SORA CATALOGUE
-                </span>
-                <h2 className="text-3xl font-extrabold tracking-wide text-white uppercase">
-                  {filterCategory || "ALL CREATIVE GEAR"}
-                </h2>
-              </div>
-              <div className="flex gap-2 mt-4 md:mt-0 font-mono text-[10px]">
-                <button
-                  onClick={() => { synthAudio.playClick(); setFilterCategory(""); }}
-                  className={`px-3 py-1.5 border rounded cursor-pointer ${
-                    !filterCategory ? "border-white text-white bg-white/5" : "border-white/5 text-silver hover:text-white"
-                  }`}
-                >
-                  ALL
-                </button>
-                {Array.from(new Set(products.map((p) => p.category))).map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => { synthAudio.playClick(); setFilterCategory(cat); }}
-                    className={`px-3 py-1.5 border rounded cursor-pointer ${
-                      filterCategory === cat ? "border-white text-white bg-white/5" : "border-white/5 text-silver hover:text-white"
-                    }`}
-                  >
-                    {cat.split(" ")[0].toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onToggleWishlist={toggleWishlist}
-                  isWishlisted={wishlist.includes(product.id)}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* Countdown promotion details */}
-          <NewDropCountdown />
-
-          {/* AI FASHION STUDIO PROMOTION */}
-          <section className="py-12 px-6 max-w-7xl mx-auto relative z-10">
-            <div className="glass border border-accent-blue/20 bg-accent-blue/5 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-accent-blue/10 rounded-full blur-[80px] -z-10" />
-              <div className="space-y-4">
-                <span className="font-mono text-[9px] text-accent-blue tracking-[0.3em] font-semibold block uppercase">
-                  EXPERIMENT LAB // ONLINE
-                </span>
-                <h3 className="text-3xl font-extrabold tracking-wide text-white uppercase">
-                  See Yourself In SORA
-                </h3>
-                <p className="font-mono text-xs text-silver max-w-xl leading-relaxed">
-                  Select your virtual avatar, configure our street-certified collection overlay, and render your lookbooks in our real-time AI styling lab.
-                </p>
-              </div>
-              <Link
-                href="/ai-studio"
-                onClick={() => synthAudio.playClick()}
-                className="px-8 py-4 bg-white text-black font-semibold font-mono text-xs rounded hover:bg-accent-blue hover:text-white transition-all cursor-pointer shadow-lg shrink-0"
-              >
-                LAUNCH AI STUDIO
-              </Link>
-            </div>
-          </section>
-
-          {/* 4. BRAND STORY SECTION ("Why SORA?") */}
-          <section className="py-24 px-6 max-w-5xl mx-auto text-center relative z-10">
-            <span className="font-mono text-[10px] text-accent-purple tracking-[0.3em] font-semibold block mb-4">
-              03 // SORA BRAND MANIFESTO
-            </span>
-            <h3 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight uppercase leading-tight mb-8">
-              Streetwear Beyond
-              <br />
-              Physical Limits.
-            </h3>
-            <p className="font-mono text-sm text-silver leading-relaxed max-w-2xl mx-auto">
-              SORA stands at the intersection of minimalist design blueprints and luxury heavyweights. We reject fast fashion metrics. Each garment is engineered as a physical-digital asset utilizing high-GSM organic weaves, technical strap layouts, and glowing cyber accents.
+          {/* Centered text overlay */}
+          <div className="relative z-10 text-center select-none px-6">
+            <h1
+              className="font-display text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-light tracking-tighter leading-[0.85] text-bone uppercase"
+              style={{ letterSpacing: "-0.03em" }}
+            >
+              <span className="block">SORA</span>
+            </h1>
+            <p className="mt-6 font-sans text-xs sm:text-sm tracking-[0.4em] text-bone/30 uppercase">
+              Wear Your Universe
             </p>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="p-6 border border-white/5 bg-white/2 rounded-xl flex flex-col items-center">
-                <Award className="w-8 h-8 text-accent-blue mb-4" />
-                <h5 className="font-sans font-bold text-sm tracking-wide text-white uppercase">Premium Quality</h5>
-                <p className="font-mono text-[10px] text-silver mt-2">Organic cotton weights exceeding 450 GSM for premium structure.</p>
-              </div>
-              <div className="p-6 border border-white/5 bg-white/2 rounded-xl flex flex-col items-center">
-                <Send className="w-8 h-8 text-accent-purple mb-4" />
-                <h5 className="font-sans font-bold text-sm tracking-wide text-white uppercase">Fast Shipping</h5>
-                <p className="font-mono text-[10px] text-silver mt-2">Dispatched in 24 hours under priority courier networks.</p>
-              </div>
-              <div className="p-6 border border-white/5 bg-white/2 rounded-xl flex flex-col items-center">
-                <HeartHandshake className="w-8 h-8 text-white mb-4" />
-                <h5 className="font-sans font-bold text-sm tracking-wide text-white uppercase">Returns Policy</h5>
-                <p className="font-mono text-[10px] text-silver mt-2">14-day hassle-free returns grid logged onto your profile.</p>
-              </div>
-            </div>
-          </section>
+          </div>
 
-          {/* 5. INSTAGRAM GALLERY GRID */}
-          <section className="py-16 px-6 max-w-7xl mx-auto relative z-10">
-            <div className="text-center mb-12">
-              <span className="font-mono text-[10px] text-accent-blue tracking-[0.3em] font-semibold block mb-2 uppercase">
-                COMMUNITY PORTAL // GRID SHOTS
-              </span>
-              <h3 className="text-2xl md:text-3xl font-extrabold tracking-wide text-white uppercase">
-                #SORA.WORLD IN WILD
-              </h3>
-            </div>
+          {/* Bottom scroll indicator */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
+            <div className="w-[1px] h-10 bg-gradient-to-b from-transparent to-bone/20 animate-pulse" />
+            <span className="font-mono text-[8px] tracking-[0.4em] text-bone/20 uppercase">
+              Scroll
+            </span>
+          </div>
+        </section>
 
-            {/* Pinterest Grid */}
-            <div className="columns-2 md:columns-4 gap-4 space-y-4">
-              {[
-                { label: "@sid_raw", color: "#ff007f", height: "h-64" },
-                { label: "@cyber_wear", color: "#4f46e5", height: "h-80" },
-                { label: "@korean_vibe", color: "#a855f7", height: "h-60" },
-                { label: "@blank_blank", color: "#00d2ff", height: "h-72" },
-                { label: "@street_style", color: "#bfc3c9", height: "h-72" },
-                { label: "@tokyo_drift", color: "#4f46e5", height: "h-60" },
-                { label: "@anime_fit", color: "#ff007f", height: "h-80" },
-                { label: "@mannequin_x", color: "#a855f7", height: "h-64" },
-              ].map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`break-inside-avoid glass border border-white/5 rounded-2xl ${img.height} relative overflow-hidden group flex items-center justify-center`}
-                >
-                  <div
-                    className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                    style={{ background: `linear-gradient(135deg, ${img.color}50 0%, ${img.color} 100%)` }}
-                  />
-                  <InstagramIcon className="w-8 h-8 text-white/20 group-hover:scale-110 group-hover:text-white/40 transition-all duration-300" />
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 font-mono text-[10px]">
-                    <span className="text-white font-semibold flex items-center gap-1.5">
-                      <InstagramIcon className="w-3.5 h-3.5 text-accent-purple" />
-                      {img.label}
-                    </span>
-                    <span className="text-silver/60 mt-1">CLICK TO EXPLORE OUTIFT</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+        {/* ─── PRODUCT SHOWCASE ─── */}
+        <ProductShowcase />
 
-          {/* 6. NEWSLETTER & FOOTER */}
-          <footer className="border-t border-white/5 bg-black/40 py-16 px-6 relative z-10">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/5 pb-16">
-              
-              {/* Col 1: Newsletter */}
-              <div className="md:col-span-2 space-y-4">
-                <span className="font-mono text-[9px] text-accent-blue tracking-[0.3em] font-semibold block uppercase">
-                  SUBSCRIBE TELEMETRY // JOIN GRID
-                </span>
-                <h4 className="text-xl font-bold text-white font-sans uppercase">
-                  STAY UPDATED ON FUTURE DROPS
-                </h4>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    synthAudio.playChime();
-                    alert("Your address coordinates are successfully subscribed to the SORA grid.");
-                  }}
-                  className="flex gap-2 max-w-sm mt-4"
-                >
-                  <input
-                    type="email"
-                    required
-                    placeholder="ENTER EMAIL COORDINATES"
-                    className="w-full bg-white/3 border border-white/5 rounded px-3 py-2 font-mono text-xs text-white focus:border-accent-blue outline-none uppercase placeholder:text-white/20"
-                  />
-                  <button
-                    type="submit"
-                    className="px-6 bg-white text-black font-mono text-xs font-semibold rounded hover:bg-accent-blue hover:text-white transition-all cursor-pointer"
-                  >
-                    JOIN
-                  </button>
-                </form>
-              </div>
+        {/* ─── COLLECTION REEL ─── */}
+        <CollectionReel />
 
-              {/* Col 2: Info links */}
-              <div>
-                <h5 className="font-mono text-[10px] text-silver/60 tracking-wider mb-4 uppercase">GRID DIRECTORY //</h5>
-                <ul className="font-mono text-xs text-silver space-y-2.5">
-                  <li><Link href="/" className="hover:text-white">STORE HOME</Link></li>
-                  <li><Link href="/about" className="hover:text-white">Manifesto Story</Link></li>
-                  <li><Link href="/admin" className="hover:text-white">Admin portal</Link></li>
-                  <li><span className="text-silver/20 cursor-not-allowed">Style quizzes (Soon)</span></li>
-                </ul>
-              </div>
+        {/* ─── MANIFESTO ─── */}
+        <ManifestoSection />
 
-              {/* Col 3: Policy links */}
-              <div>
-                <h5 className="font-mono text-[10px] text-silver/60 tracking-wider mb-4 uppercase">POLICIES GRID //</h5>
-                <ul className="font-mono text-xs text-silver space-y-2.5">
-                  <li><span className="hover:text-white cursor-pointer">Shipping & Logistics</span></li>
-                  <li><span className="hover:text-white cursor-pointer">Return telemetry</span></li>
-                  <li><span className="hover:text-white cursor-pointer">Privacy blockchain</span></li>
-                  <li><span className="hover:text-white cursor-pointer">FAQs Database</span></li>
-                </ul>
-              </div>
+        {/* ─── COMMUNITY ─── */}
+        <CommunityMosaic />
 
-            </div>
-
-            {/* Bottom Credits */}
-            <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[9px] text-silver/40">
-              <span>© {new Date().getFullYear()} SORA WORLD. ALL CODES SECURED.</span>
-              <span>DESIGNED BY LEXONPRO SPECIFICATION.</span>
-            </div>
-          </footer>
-
-        </div>
-      )}
+        {/* ─── FOOTER ─── */}
+        <Suspense fallback={null}>
+          <FooterScene />
+        </Suspense>
+      </SmoothScroll>
     </>
   );
 }

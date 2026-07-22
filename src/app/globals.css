@@ -1,160 +1,141 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #0d0d0d;
-  --foreground: #ffffff;
-  --accent-blue: #4f46e5;
-  --accent-purple: #a855f7;
-  --silver: #bfc3c9;
+  --void: #050505;
+  --bone: #F0EDE8;
+  --amber: #D4A853;
+  --sage: #8B9A7E;
+  --charcoal: #1A1A1A;
+  --text-primary: var(--bone);
+  --text-muted: rgba(240, 237, 232, 0.4);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent-blue: var(--accent-blue);
-  --color-accent-purple: var(--accent-purple);
-  --color-silver: var(--silver);
-  --font-sans: 'Outfit', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --color-void: var(--void);
+  --color-bone: var(--bone);
+  --color-amber: var(--amber);
+  --color-sage: var(--sage);
+  --color-charcoal: var(--charcoal);
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
-/* Custom base rules */
-html {
-  scroll-behavior: smooth;
-  background-color: #0d0d0d;
-  color: #ffffff;
-  overflow-x: hidden;
-}
-
+/* Base Styles */
+html,
 body {
-  background-color: #0d0d0d;
-  color: #ffffff;
-  min-height: 100vh;
+  background-color: var(--void);
+  color: var(--bone);
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* Custom Cursor Support */
+@media (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+}
+
+/* Selection Styling */
+::selection {
+  background-color: var(--amber);
+  color: var(--void);
+}
+
+::-moz-selection {
+  background-color: var(--amber);
+  color: var(--void);
+}
+
+/* Smooth Thin Dark Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(13, 13, 13, 0.8);
+  background: var(--void);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(191, 195, 201, 0.2);
+  background: var(--charcoal);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(79, 70, 229, 0.6);
+  background: rgba(240, 237, 232, 0.25);
 }
 
-/* Glassmorphism Classes */
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--charcoal) var(--void);
 }
 
-.glass-premium {
-  background: rgba(13, 13, 13, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Lenis Smooth Scroll Compatibility */
+html.lenis,
+html.lenis body {
+  height: auto;
 }
 
-.glass-accent {
-  background: rgba(79, 70, 229, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(79, 70, 229, 0.2);
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
-/* scanlines HUD Overlay */
-.scanlines {
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Utility Classes */
+
+/* Text Reveal Mask for animated typography */
+.text-reveal-mask {
+  overflow: hidden;
+  display: block;
+}
+
+.text-reveal-mask > * {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: left bottom;
+}
+
+/* Grain Overlay (Cinematic subtle film noise) */
+.grain-overlay {
+  position: relative;
+}
+
+.grain-overlay::after {
+  content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  );
-  background-size: 100% 4px;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  pointer-events: none;
   z-index: 9999;
-  pointer-events: none;
-  opacity: 0.15;
 }
 
-.hud-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-}
-
-/* Glowing text */
-.glow-text {
-  text-shadow: 0 0 10px rgba(79, 70, 229, 0.4), 0 0 20px rgba(168, 85, 247, 0.2);
-}
-
-.glow-blue {
-  box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
-}
-
-.glow-purple {
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-}
-
-/* Custom Interactive Cursor styling */
-.custom-cursor {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  position: fixed;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10000;
-  transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
-}
-
-.custom-cursor-dot {
-  width: 4px;
-  height: 4px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  position: fixed;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10000;
-}
-
-/* Magnetic Button effects */
-.magnetic {
+/* Magnetic Area for interactive cursor elements */
+.magnetic-area {
+  position: relative;
+  display: inline-block;
+  will-change: transform;
   transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-/* Text masking for sleek reveals */
-.text-reveal {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-}
-
-/* Horizontal scroll snapping */
-.scroll-x-snap {
-  scroll-snap-type: x mandatory;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.scroll-x-snap::-webkit-scrollbar {
-  display: none;
-}
-
-.snap-item {
-  scroll-snap-align: start;
 }
