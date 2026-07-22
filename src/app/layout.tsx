@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
+import { HUDOverlay } from "@/components/HUDOverlay";
 
 export const metadata: Metadata = {
   title: "SORA | Wear Your Universe",
@@ -26,6 +27,9 @@ export default function RootLayout({
       <body className="font-sans bg-[#0D0D0D] text-white min-h-screen relative hud-grid selection:bg-accent-blue selection:text-white">
         {/* Retro scanline overlay filter */}
         <div className="scanlines" aria-hidden="true" />
+        
+        {/* Persistent Technical HUD Overlays */}
+        <HUDOverlay />
         
         <StoreProvider>
           {children}

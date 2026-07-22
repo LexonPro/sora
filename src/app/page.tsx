@@ -5,6 +5,7 @@ import { useStore, Product } from "@/context/StoreContext";
 import { synthAudio } from "@/components/AudioEngine";
 import { LogoLoader } from "@/components/LogoLoader";
 import { CustomCursor, BackgroundParticles } from "@/components/Effects";
+import { GlitchOverlay } from "@/components/GlitchOverlay";
 import { Navbar } from "@/components/Navbar";
 import ThreeCanvas from "@/components/ThreeCanvas";
 import { Collections3D } from "@/components/Collections3D";
@@ -215,6 +216,7 @@ export default function HomePage() {
           {/* Premium effects */}
           <CustomCursor />
           <BackgroundParticles />
+          <GlitchOverlay trigger={filterCategory} />
 
           {/* Navigation Bar */}
           <Navbar onSelectCategory={handleSelectCategory} />

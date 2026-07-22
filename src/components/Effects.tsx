@@ -61,27 +61,62 @@ export const CustomCursor: React.FC = () => {
 
   return (
     <>
-      {/* Outer Ring */}
+      {/* Tactical Radar Ring Trail */}
       <motion.div
-        className="custom-cursor"
+        className="fixed pointer-events-none z-[10000] -translate-x-1/2 -translate-y-1/2"
         style={{
           left: cursorXSpring,
           top: cursorYSpring,
-          borderColor: isHovered ? "var(--accent-blue)" : "rgba(255, 255, 255, 0.4)",
-          backgroundColor: isHovered ? "rgba(79, 70, 229, 0.1)" : "rgba(255, 255, 255, 0)",
-          borderWidth: isHovered ? "1px" : "2px",
-          width: isHovered ? 45 : isClicked ? 15 : 20,
-          height: isHovered ? 45 : isClicked ? 15 : 20,
+          width: isHovered ? 48 : isClicked ? 24 : 32,
+          height: isHovered ? 48 : isClicked ? 24 : 32,
         }}
-      />
-      {/* Inner Dot */}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          className="w-full h-full transition-colors duration-300"
+          style={{
+            color: isHovered
+              ? "var(--accent-blue)"
+              : isClicked
+              ? "var(--accent-purple)"
+              : "rgba(191, 195, 201, 0.5)",
+            animation: isHovered 
+              ? "spin 2.5s infinite linear" 
+              : isClicked
+              ? "spin 1.2s infinite linear"
+              : "spin 7s infinite linear",
+          }}
+        >
+          {/* Dashed outer ring */}
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeDasharray="18 10"
+          />
+          {/* Crosshair locks */}
+          <line x1="50" y1="0" x2="50" y2="12" stroke="currentColor" strokeWidth="5" />
+          <line x1="50" y1="88" x2="50" y2="100" stroke="currentColor" strokeWidth="5" />
+          <line x1="0" y1="50" x2="12" y2="50" stroke="currentColor" strokeWidth="5" />
+          <line x1="88" y1="50" x2="100" y2="50" stroke="currentColor" strokeWidth="5" />
+        </svg>
+      </motion.div>
+
+      {/* Target Center Dot */}
       <motion.div
         className="custom-cursor-dot"
         style={{
           left: cursorX,
           top: cursorY,
-          scale: isHovered ? 1.5 : isClicked ? 0.7 : 1,
-          backgroundColor: isHovered ? "var(--accent-purple)" : "#ffffff",
+          scale: isHovered ? 1.6 : isClicked ? 0.6 : 1,
+          backgroundColor: isHovered
+            ? "var(--accent-purple)"
+            : isClicked
+            ? "var(--accent-blue)"
+            : "#ffffff",
         }}
       />
     </>
