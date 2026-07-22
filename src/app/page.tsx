@@ -356,6 +356,31 @@ export default function HomePage() {
           {/* Countdown promotion details */}
           <NewDropCountdown />
 
+          {/* AI FASHION STUDIO PROMOTION */}
+          <section className="py-12 px-6 max-w-7xl mx-auto relative z-10">
+            <div className="glass border border-accent-blue/20 bg-accent-blue/5 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-accent-blue/10 rounded-full blur-[80px] -z-10" />
+              <div className="space-y-4">
+                <span className="font-mono text-[9px] text-accent-blue tracking-[0.3em] font-semibold block uppercase">
+                  EXPERIMENT LAB // ONLINE
+                </span>
+                <h3 className="text-3xl font-extrabold tracking-wide text-white uppercase">
+                  See Yourself In SORA
+                </h3>
+                <p className="font-mono text-xs text-silver max-w-xl leading-relaxed">
+                  Select your virtual avatar, configure our street-certified collection overlay, and render your lookbooks in our real-time AI styling lab.
+                </p>
+              </div>
+              <Link
+                href="/ai-studio"
+                onClick={() => synthAudio.playClick()}
+                className="px-8 py-4 bg-white text-black font-semibold font-mono text-xs rounded hover:bg-accent-blue hover:text-white transition-all cursor-pointer shadow-lg shrink-0"
+              >
+                LAUNCH AI STUDIO
+              </Link>
+            </div>
+          </section>
+
           {/* 4. BRAND STORY SECTION ("Why SORA?") */}
           <section className="py-24 px-6 max-w-5xl mx-auto text-center relative z-10">
             <span className="font-mono text-[10px] text-accent-purple tracking-[0.3em] font-semibold block mb-4">

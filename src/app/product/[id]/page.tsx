@@ -20,10 +20,11 @@ export default function ProductDetailPage() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState("M");
-  const [activeAngle, setActiveAngle] = useState<"front" | "side" | "detail" | "orbit">("front");
+  const [activeAngle, setActiveAngle] = useState<"front" | "back" | "detail" | "texture" | "orbit">("front");
   const [pincode, setPincode] = useState("");
   const [deliveryMessage, setDeliveryMessage] = useState("");
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [customColor, setCustomColor] = useState("");
 
   // AI Outfit Builder check states
   const [checkedOutfitItems, setCheckedOutfitItems] = useState<string[]>([]);
@@ -40,6 +41,7 @@ export default function ProductDetailPage() {
         setProduct(found);
         setSelectedSize(found.sizes[0] || "M");
         setLocalReviews(found.reviews);
+        setCustomColor(found.color);
         
         // Initialize AI outfit builder checked items (excluding current product)
         setCheckedOutfitItems(found.completeTheLook);
@@ -152,38 +154,164 @@ export default function ProductDetailPage() {
           {/* Main 360 angle viewframe */}
           <div className="glass border border-white/5 rounded-2xl aspect-[4/5] relative flex items-center justify-center p-8 bg-black/40 overflow-hidden group">
             <div
-              className="absolute inset-0 opacity-10"
+              className="absolute inset-0 opacity-10 transition-colors duration-500"
               style={{
-                background: `radial-gradient(circle, ${product.color} 0%, transparent 70%)`,
+                background: `radial-gradient(circle, ${customColor} 0%, transparent 70%)`,
               }}
             />
 
             {/* Dynamic Angle Graphic Render (SVG based style) */}
             <svg viewBox="0 0 100 100" className="w-64 h-64 text-white/50 transition-all duration-500">
-              {activeAngle === "front" && (
-                <path d="M30 30 L40 25 L50 28 L60 25 L70 30 L66 70 L60 70 L50 73 L40 70 L34 70 Z M30 30 L20 48 L28 50 L34 38 M70 30 L80 48 L72 50 L66 38" fill="none" stroke={product.color} strokeWidth="2.5" strokeLinejoin="round" />
+              {/* HOODIE AND TEES VIEW SCHEMATICS */}
+              {!product.category.includes("Cargo") && !product.id.includes("chain") && !product.id.includes("beanie") && (
+                <>
+                  {activeAngle === "front" && (
+                    <g>
+                      <path d="M30 30 L40 25 L50 28 L60 25 L70 30 L66 70 L60 70 L50 73 L40 70 L34 70 Z M30 30 L20 48 L28 50 L34 38 M70 30 L80 48 L72 50 L66 38" fill="none" stroke={customColor} strokeWidth="2.5" strokeLinejoin="round" />
+                      <path d="M48 28 V40 M52 28 V40" fill="none" stroke="white" strokeWidth="1.2" /> {/* Strings */}
+                      <circle cx="50" cy="50" r="3" fill="none" stroke="white" strokeWidth="1" /> {/* Emblem */}
+                    </g>
+                  )}
+                  {activeAngle === "back" && (
+                    <g>
+                      {/* Back view drops the front neck details and shows the back hood drop */}
+                      <path d="M30 30 L40 25 L50 22 L60 25 L70 30 L66 70 L60 70 L50 73 L40 70 L34 70 Z M30 30 L20 48 L28 50 L34 38 M70 30 L80 48 L72 50 L66 38" fill="none" stroke={customColor} strokeWidth="2.5" strokeLinejoin="round" />
+                      <path d="M36 26 Q50 46 64 26" fill="none" stroke={customColor} strokeWidth="2.2" /> {/* Back of hood drop */}
+                    </g>
+                  )}
+                  {activeAngle === "detail" && (
+                    <g>
+                      {/* Close up stitch detail */}
+                      <path d="M20 20 H80 V80 H20 Z" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                      <circle cx="50" cy="50" r="16" fill="none" stroke={customColor} strokeWidth="3" /> {/* Stitch ring logo */}
+                      <path d="M36 50 H64 M50 36 V64" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="3 3" />
+                      <text x="50" y="76" textAnchor="middle" fill="white" className="font-mono text-[6px] tracking-widest font-bold">STITCH_SPEC</text>
+                    </g>
+                  )}
+                  {activeAngle === "texture" && (
+                    <g>
+                      {/* Microscopic cotton loops for French Terry weave */}
+                      <path d="M10 10 H90 V90 H10 Z" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                      {/* Dense looping matrix */}
+                      {[...Array(6)].map((_, r) => (
+                        <g key={r} transform={`translate(0, ${r * 12 + 16})`}>
+                          {[...Array(8)].map((_, c) => (
+                            <path
+                              key={c}
+                              d="M 5 0 Q 10 -8, 15 0"
+                              fill="none"
+                              stroke={c % 2 === 0 ? customColor : "#ffffff"}
+                              strokeWidth="1.5"
+                              transform={`translate(${c * 10 + 12}, 0)`}
+                              opacity="0.75"
+                            />
+                          ))}
+                        </g>
+                      ))}
+                      <text x="50" y="86" textAnchor="middle" fill="white" className="font-mono text-[5px] tracking-widest">450 GSM HEAVY COTTON WEAVE</text>
+                    </g>
+                  )}
+                  {activeAngle === "orbit" && (
+                    <g className="animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '8s' }}>
+                      <path d="M30 30 L40 25 L50 28 L60 25 L70 30 L66 70 L60 70 L50 73 L40 70 L34 70 Z" fill="none" stroke={customColor} strokeWidth="2.5" />
+                      <ellipse cx="50" cy="50" rx="35" ry="12" fill="none" stroke="white" strokeWidth="0.8" strokeDasharray="3 3" />
+                    </g>
+                  )}
+                </>
               )}
-              {activeAngle === "side" && (
-                <path d="M40 30 L45 25 L53 28 L57 30 L55 70 L48 70 L45 73 L40 70 Z M40 30 L35 48 L40 50 L43 38" fill="none" stroke={product.color} strokeWidth="2.5" strokeLinejoin="round" />
+
+              {/* CARGO PANTS VIEW SCHEMATICS */}
+              {product.category.includes("Cargo") && (
+                <>
+                  {activeAngle === "front" && (
+                    <path d="M38 22 L62 22 L68 76 L56 76 L50 38 L44 76 L32 76 Z" fill="none" stroke={customColor} strokeWidth="2.5" strokeLinejoin="round" />
+                  )}
+                  {activeAngle === "back" && (
+                    <g>
+                      <path d="M38 22 L62 22 L68 76 L56 76 L50 38 L44 76 L32 76 Z" fill="none" stroke={customColor} strokeWidth="2.5" strokeLinejoin="round" />
+                      <rect x="36" y="32" width="6" height="8" fill="none" stroke="white" strokeWidth="1.2" /> {/* Pocket left */}
+                      <rect x="58" y="32" width="6" height="8" fill="none" stroke="white" strokeWidth="1.2" /> {/* Pocket right */}
+                    </g>
+                  )}
+                  {activeAngle === "detail" && (
+                    <g>
+                      <rect x="30" y="30" width="40" height="40" fill="none" stroke="rgba(255,255,255,0.05)" />
+                      {/* Pocket Buckle stitch details */}
+                      <path d="M35 38 H65 V55 H35 Z" fill="none" stroke={customColor} strokeWidth="2" />
+                      <path d="M42 45 H58" stroke="white" strokeWidth="3" />
+                      <rect x="47" y="40" width="6" height="18" fill="none" stroke="white" strokeWidth="1.5" />
+                    </g>
+                  )}
+                  {activeAngle === "texture" && (
+                    <g>
+                      <path d="M10 10 H90 V90 H10 Z" fill="none" stroke="rgba(255,255,255,0.05)" />
+                      {/* Heavy nylon twill diagonal ridges */}
+                      {[...Array(12)].map((_, i) => (
+                        <line
+                          key={i}
+                          x1={15}
+                          y1={i * 6 + 15}
+                          x2={i * 6 + 15}
+                          y2={15}
+                          stroke={i % 2 === 0 ? customColor : "#ffffff"}
+                          strokeWidth="1.5"
+                          opacity="0.4"
+                        />
+                      ))}
+                      <text x="50" y="86" textAnchor="middle" fill="white" className="font-mono text-[5px] tracking-widest">WATER-REPELLENT CORDURA NYLON</text>
+                    </g>
+                  )}
+                  {activeAngle === "orbit" && (
+                    <g className="animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '8s' }}>
+                      <path d="M38 22 L62 22 L68 76 L56 76 L50 38 L44 76 L32 76 Z" fill="none" stroke={customColor} strokeWidth="2.5" strokeLinejoin="round" />
+                      <ellipse cx="50" cy="50" rx="35" ry="12" fill="none" stroke="white" strokeWidth="0.8" strokeDasharray="3 3" />
+                    </g>
+                  )}
+                </>
               )}
-              {activeAngle === "detail" && (
-                <path d="M42 42 H58 V58 H42 Z M45 42 V38 M55 42 V38 M45 58 V62 M55 58 V62" fill="none" stroke={product.color} strokeWidth="3" />
-              )}
-              {activeAngle === "orbit" && (
-                <g className="animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '8s' }}>
-                  <path d="M30 30 L40 25 L50 28 L60 25 L70 30 L66 70 L60 70 L50 73 L40 70 L34 70 Z" fill="none" stroke={product.color} strokeWidth="2.5" />
-                  <ellipse cx="50" cy="50" rx="35" ry="12" fill="none" stroke="white" strokeWidth="0.8" strokeDasharray="3 3" />
-                </g>
+
+              {/* ACCESSORIES (CHAIN / BEANIE) SCHEMATICS */}
+              {(product.id.includes("chain") || product.id.includes("beanie")) && (
+                <>
+                  {activeAngle === "front" && (
+                    <path d="M50 20 C65 20, 68 55, 50 75 C32 55, 35 20, 50 20 Z" fill="none" stroke={customColor} strokeWidth="2.5" />
+                  )}
+                  {activeAngle === "back" && (
+                    <path d="M50 20 C65 20, 68 55, 50 75 C32 55, 35 20, 50 20 Z" fill="none" stroke={customColor} strokeWidth="2.5" opacity="0.6" />
+                  )}
+                  {activeAngle === "detail" && (
+                    <g>
+                      <circle cx="50" cy="50" r="22" fill="none" stroke={customColor} strokeWidth="3.5" />
+                      <path d="M38 50 H62 M50 38 V62" fill="none" stroke="white" strokeWidth="2.2" />
+                    </g>
+                  )}
+                  {activeAngle === "texture" && (
+                    <g>
+                      <path d="M10 10 H90 V90 H10 Z" fill="none" stroke="rgba(255,255,255,0.05)" />
+                      {/* Brushed metal coordinates */}
+                      <circle cx="50" cy="50" r="15" fill="none" stroke={customColor} strokeWidth="2.5" />
+                      <circle cx="50" cy="50" r="25" fill="none" stroke="white" strokeWidth="1" strokeDasharray="4 4" />
+                      <text x="50" y="86" textAnchor="middle" fill="white" className="font-mono text-[5px] tracking-widest">SURGICAL STAINLESS STEEL 316L</text>
+                    </g>
+                  )}
+                  {activeAngle === "orbit" && (
+                    <g className="animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '8s' }}>
+                      <path d="M50 20 C65 20, 68 55, 50 75 C32 55, 35 20, 50 20 Z" fill="none" stroke={customColor} strokeWidth="2.5" />
+                      <ellipse cx="50" cy="50" rx="35" ry="12" fill="none" stroke="white" strokeWidth="0.8" strokeDasharray="3 3" />
+                    </g>
+                  )}
+                </>
               )}
             </svg>
 
             {/* Angle selectors HUD overlays */}
-            <div className="absolute bottom-6 left-6 right-6 flex justify-center gap-2 font-mono text-[9px]">
+            <div className="absolute bottom-6 left-4 right-4 flex flex-wrap justify-center gap-1.5 font-mono text-[8px] tracking-wider z-20">
               {[
                 { key: "front", label: "01 // FRONT" },
-                { key: "side", label: "02 // PROFILE" },
+                { key: "back", label: "02 // BACK" },
                 { key: "detail", label: "03 // ZOOM" },
-                { key: "orbit", label: "04 // 3D LOOP" },
+                { key: "texture", label: "04 // TEXTURE" },
+                { key: "orbit", label: "05 // 3D ROTATE" },
               ].map((ang) => (
                 <button
                   key={ang.key}
@@ -191,9 +319,9 @@ export default function ProductDetailPage() {
                     synthAudio.playClick();
                     setActiveAngle(ang.key as any);
                   }}
-                  className={`px-3 py-1.5 border rounded cursor-pointer ${
+                  className={`px-2.5 py-1.5 border rounded cursor-pointer transition-colors ${
                     activeAngle === ang.key
-                      ? "border-accent-blue text-white bg-accent-blue/5 glow-blue"
+                      ? "border-accent-blue text-white bg-accent-blue/10 glow-blue font-bold"
                       : "border-white/5 text-silver hover:text-white"
                   }`}
                 >
@@ -283,6 +411,45 @@ export default function ProductDetailPage() {
                       }`}
                     >
                       {sz}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Customize Your Vibe Swatches */}
+            <div className="space-y-3 font-mono text-xs pt-6 border-t border-white/5">
+              <div className="flex justify-between text-silver/60">
+                <span>CUSTOMIZE YOUR VIBE</span>
+                <span className="text-accent-blue font-bold">ACCENT TONER</span>
+              </div>
+              <div className="flex gap-2">
+                {[
+                  { color: "#ff007f", label: "Neon Magenta" },
+                  { color: "#4f46e5", label: "Electric Indigo" },
+                  { color: "#a855f7", label: "Electric Purple" },
+                  { color: "#00ffcc", label: "Cyber Green" },
+                  { color: "#bfc3c9", label: "Chrome Silver" },
+                ].map((swatch) => {
+                  const isSelected = customColor === swatch.color;
+                  return (
+                    <button
+                      key={swatch.color}
+                      onClick={() => {
+                        synthAudio.playClick();
+                        setCustomColor(swatch.color);
+                      }}
+                      className={`w-9 h-9 rounded-full border transition-all cursor-pointer flex items-center justify-center`}
+                      style={{
+                        backgroundColor: swatch.color,
+                        borderColor: isSelected ? "white" : "transparent",
+                        boxShadow: isSelected ? `0 0 10px ${swatch.color}` : "none",
+                      }}
+                      title={swatch.label}
+                    >
+                      {isSelected && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white mix-blend-difference" />
+                      )}
                     </button>
                   );
                 })}

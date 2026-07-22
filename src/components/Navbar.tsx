@@ -132,6 +132,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onSelectCategory, onOpenProduct 
               ABOUT SORA
             </Link>
             <Link
+              href="/ai-studio"
+              onClick={() => synthAudio.playClick()}
+              className="hover:text-white hover:glow-text transition-all text-accent-blue"
+              onMouseEnter={() => synthAudio.playHover()}
+            >
+              AI STUDIO
+            </Link>
+            <Link
               href="/admin"
               onClick={() => synthAudio.playClick()}
               className="hover:text-white hover:glow-text transition-all flex items-center gap-1 text-accent-blue"
