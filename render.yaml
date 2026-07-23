@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: sora-world
+    env: node
+    region: singapore # Options: oregon, frankfurt, singapore, ohio
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

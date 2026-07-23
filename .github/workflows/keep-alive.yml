@@ -1,0 +1,22 @@
+name: Render Backend Keep-Alive
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent Render free tier from sleeping (sleeps after 15 mins)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend Health Endpoint
+        run: |
+          RENDER_URL="${{ secrets.RENDER_SERVICE_URL }}"
+          if [ -z "$RENDER_URL" ]; then
+            echo "RENDER_SERVICE_URL secret not set yet. Defaulting to health check ping."
+            echo "Please set RENDER_SERVICE_URL in Repository Secrets (e.g. https://sora-world.onrender.com)"
+          else
+            echo "Pinging Render backend at $RENDER_URL/api/health..."
+            curl -s -f "$RENDER_URL/api/health" || echo "Ping failed or server waking up."
+          fi

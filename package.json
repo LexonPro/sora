@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "keep-alive": "node scripts/keep-alive.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
